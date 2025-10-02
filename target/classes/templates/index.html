@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediBook - Book Doctor Appointments Online</title>
+    <link rel="stylesheet" href="/css/app.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="nav">
+        <div class="brand">MediBook</div>
+        <div class="nav-links">
+          <a href="#about">About</a>
+          <a href="#services">Services</a>
+          <button class="btn btn-outline" onclick="openAuthModal()">
+            Login / Sign Up
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <h1>Find the Right Doctor for You</h1>
+          <p>
+            Book appointments with qualified doctors in your area. Fast, secure,
+            and convenient healthcare at your fingertips.
+          </p>
+          <div class="hero-buttons">
+            <button class="btn btn-primary" onclick="openAuthModal()">
+              Explore Doctors
+            </button>
+            <button
+              class="btn btn-secondary"
+              onclick="scrollToSection('about')"
+            >
+              Know More
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="section">
+        <div class="container">
+          <h2 class="section-title">Why Choose MediBook?</h2>
+          <div class="grid grid-3">
+            <div class="card">
+              <h3>🏥 Wide Selection</h3>
+              <p>
+                Choose from hundreds of qualified doctors across various
+                specialties.
+              </p>
+            </div>
+            <div class="card">
+              <h3>⏰ Easy Booking</h3>
+              <p>
+                Book appointments 24/7 with real-time availability and instant
+                confirmation.
+              </p>
+            </div>
+            <div class="card">
+              <h3>🔒 Secure & Private</h3>
+              <p>
+                Your health information is protected with enterprise-grade
+                security.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="services" class="section">
+        <div class="container">
+          <h2 class="section-title">Popular Specialties</h2>
+          <div class="grid grid-4">
+            <div class="card">
+              <h3>Cardiology</h3>
+              <p>Heart and vascular care</p>
+            </div>
+            <div class="card">
+              <h3>Dermatology</h3>
+              <p>Skin, hair, and nail care</p>
+            </div>
+            <div class="card">
+              <h3>Pediatrics</h3>
+              <p>Care for infants and children</p>
+            </div>
+            <div class="card">
+              <h3>Orthopedics</h3>
+              <p>Bones and joints</p>
+            </div>
+            <div class="card">
+              <h3>Neurology</h3>
+              <p>Brain and nervous system</p>
+            </div>
+            <div class="card">
+              <h3>ENT</h3>
+              <p>Ears, nose, and throat</p>
+            </div>
+            <div class="card">
+              <h3>Gynecology</h3>
+              <p>Women's health care</p>
+            </div>
+            <div class="card">
+              <h3>Psychiatry</h3>
+              <p>Mental health support</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2024 MediBook. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Welcome to MediBook</h2>
+          <button class="close-btn" onclick="closeAuthModal()">&times;</button>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('login')">Login</button>
+          <button class="tab" onclick="switchTab('signup')">Sign Up</button>
+        </div>
+
+        <div id="loginTab">
+          <form id="loginForm">
+            <div class="form-group">
+              <label class="form-label" for="loginEmail">Email</label>
+              <input type="email" id="loginEmail" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="loginPassword">Password</label>
+              <input
+                type="password"
+                id="loginPassword"
+                class="form-input"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="loginRole">Sign in as</label>
+              <select id="loginRole" class="form-select">
+                <option value="PATIENT">Patient</option>
+                <option value="DOCTOR">Doctor</option>
+                <option value="ADMIN">Admin</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%">
+              Login
+            </button>
+          </form>
+        </div>
+
+        <div id="signupTab" style="display: none">
+          <form id="signupForm">
+            <div class="form-group">
+              <label class="form-label" for="signupName">Full Name</label>
+              <input type="text" id="signupName" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signupEmail">Email</label>
+              <input
+                type="email"
+                id="signupEmail"
+                class="form-input"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signupPhone"
+                >Phone (Optional)</label
+              >
+              <input type="tel" id="signupPhone" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signupPassword">Password</label>
+              <input
+                type="password"
+                id="signupPassword"
+                class="form-input"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%">
+              Create Account
+            </button>
+          </form>
+        </div>
+
+        <div id="alert" style="display: none"></div>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+      function openAuthModal() {
+        document.getElementById("authModal").classList.add("active");
+      }
+
+      function closeAuthModal() {
+        document.getElementById("authModal").classList.remove("active");
+        document.getElementById("alert").style.display = "none";
+      }
+
+      function switchTab(tab) {
+        // Update tab buttons
+        document
+          .querySelectorAll(".tab")
+          .forEach((t) => t.classList.remove("active"));
+        event.target.classList.add("active");
+
+        // Show/hide forms
+        document.getElementById("loginTab").style.display =
+          tab === "login" ? "block" : "none";
+        document.getElementById("signupTab").style.display =
+          tab === "signup" ? "block" : "none";
+      }
+
+      function scrollToSection(sectionId) {
+        document
+          .getElementById(sectionId)
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      // Login form handler
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email = document.getElementById("loginEmail").value;
+          const password = document.getElementById("loginPassword").value;
+          const role = document.getElementById("loginRole").value;
+
+          try {
+            const res = await apiPost("/api/auth/login", { email, password });
+            saveToken(res.token);
+            closeAuthModal();
+
+            // Redirect based on role
+            const redirectMap = {
+              PATIENT: "/patient/dashboard",
+              DOCTOR: "/doctor/dashboard",
+              ADMIN: "/admin/dashboard",
+            };
+            window.location.href = redirectMap[role] || "/";
+          } catch (err) {
+            showAlert(err.message, "error");
+          }
+        });
+
+      // Signup form handler
+      document
+        .getElementById("signupForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const payload = {
+            fullName: document.getElementById("signupName").value,
+            email: document.getElementById("signupEmail").value,
+            phone: document.getElementById("signupPhone").value,
+            password: document.getElementById("signupPassword").value,
+          };
+
+          try {
+            await apiPost("/api/auth/register/patient", payload);
+            showAlert("Account created successfully! Please login.", "success");
+            switchTab("login");
+          } catch (err) {
+            showAlert(err.message, "error");
+          }
+        });
+
+      function showAlert(message, type) {
+        const alert = document.getElementById("alert");
+        alert.className = `alert alert-${type}`;
+        alert.textContent = message;
+        alert.style.display = "block";
+      }
+
+      // Close modal on outside click
+      document.getElementById("authModal").addEventListener("click", (e) => {
+        if (e.target.id === "authModal") {
+          closeAuthModal();
+        }
+      });
+    </script>
+  </body>
+</html>

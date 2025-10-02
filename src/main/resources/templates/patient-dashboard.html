@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patient Dashboard - MediBook</title>
+    <link rel="stylesheet" href="/css/app.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="nav">
+        <div class="brand">MediBook</div>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="#" onclick="logout()">Logout</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="dashboard">
+      <div class="container">
+        <div class="dashboard-header">
+          <h1 class="dashboard-title">Find Your Doctor</h1>
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="search-bar">
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Search doctors by name or specialty..."
+          />
+          <select id="specialtyFilter" class="filter-select">
+            <option value="">All Specialties</option>
+            <option value="Cardiologist">Cardiologist</option>
+            <option value="Dermatologist">Dermatologist</option>
+            <option value="Pediatrician">Pediatrician</option>
+            <option value="Orthopedic">Orthopedic</option>
+            <option value="Neurologist">Neurologist</option>
+            <option value="ENT">ENT</option>
+            <option value="Gynecologist">Gynecologist</option>
+            <option value="Urologist">Urologist</option>
+            <option value="Ophthalmologist">Ophthalmologist</option>
+            <option value="Psychiatrist">Psychiatrist</option>
+            <option value="Oncologist">Oncologist</option>
+            <option value="Endocrinologist">Endocrinologist</option>
+            <option value="Nephrologist">Nephrologist</option>
+            <option value="Gastroenterologist">Gastroenterologist</option>
+          </select>
+          <select id="sortFilter" class="filter-select">
+            <option value="name">Sort by Name</option>
+            <option value="specialty">Sort by Specialty</option>
+            <option value="available">Available First</option>
+          </select>
+        </div>
+
+        <!-- Doctors Grid -->
+        <div id="doctorsGrid" class="grid grid-3">
+          <!-- Doctors will be loaded here -->
+        </div>
+
+        <!-- My Appointments Section -->
+        <div class="section">
+          <h2 class="section-title">My Appointments</h2>
+          <div id="myAppointments" class="grid grid-2">
+            <!-- Appointments will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Doctor Detail Modal -->
+    <div id="doctorModal" class="modal">
+      <div class="modal-content" style="max-width: 800px">
+        <div class="modal-header">
+          <h2 class="modal-title" id="doctorModalTitle">Doctor Details</h2>
+          <button class="close-btn" onclick="closeDoctorModal()">
+            &times;
+          </button>
+        </div>
+
+        <div id="doctorDetails">
+          <!-- Doctor details will be loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Book Appointment</h2>
+          <button class="close-btn" onclick="closeBookingModal()">
+            &times;
+          </button>
+        </div>
+
+        <form id="bookingForm">
+          <div class="form-group">
+            <label class="form-label" for="patientId">Patient ID</label>
+            <input type="number" id="patientId" class="form-input" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="selectedSlot"
+              >Selected Time Slot</label
+            >
+            <input type="text" id="selectedSlot" class="form-input" readonly />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            Book Appointment
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+      let doctors = [];
+      let currentDoctor = null;
+      let selectedSlot = null;
+
+      // Load doctors on page load
+      document.addEventListener("DOMContentLoaded", () => {
+        loadDoctors();
+        loadMyAppointments();
+      });
+
+      // Search and filter functionality
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", filterDoctors);
+      document
+        .getElementById("specialtyFilter")
+        .addEventListener("change", filterDoctors);
+      document
+        .getElementById("sortFilter")
+        .addEventListener("change", filterDoctors);
+
+      async function loadDoctors() {
+        try {
+          doctors = await apiGet("/api/public/doctors");
+          renderDoctors(doctors);
+        } catch (e) {
+          console.error("Failed to load doctors:", e);
+        }
+      }
+
+      function renderDoctors(doctorsToRender) {
+        const grid = document.getElementById("doctorsGrid");
+        grid.innerHTML = "";
+
+        doctorsToRender.forEach((doctor) => {
+          const card = document.createElement("div");
+          card.className = "doctor-card";
+          card.onclick = () => openDoctorModal(doctor);
+
+          const initials = doctor.fullName
+            .split(" ")
+            .map((n) => n[0])
+            .join("");
+
+          card.innerHTML = `
+                    <div class="doctor-avatar">${initials}</div>
+                    <div class="doctor-name">${doctor.fullName}</div>
+                    <div class="doctor-specialty">${
+                      doctor.specialty || "General Medicine"
+                    }</div>
+                    <div class="doctor-rating">
+                        <span class="stars">★★★★★</span>
+                        <span>(4.8)</span>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%;">View Available Slots</button>
+                `;
+
+          grid.appendChild(card);
+        });
+      }
+
+      function filterDoctors() {
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const specialty = document.getElementById("specialtyFilter").value;
+        const sortBy = document.getElementById("sortFilter").value;
+
+        let filtered = doctors.filter((doctor) => {
+          const matchesSearch =
+            doctor.fullName.toLowerCase().includes(searchTerm) ||
+            (doctor.specialty &&
+              doctor.specialty.toLowerCase().includes(searchTerm));
+          const matchesSpecialty = !specialty || doctor.specialty === specialty;
+          return matchesSearch && matchesSpecialty;
+        });
+
+        // Sort
+        filtered.sort((a, b) => {
+          switch (sortBy) {
+            case "name":
+              return a.fullName.localeCompare(b.fullName);
+            case "specialty":
+              return (a.specialty || "").localeCompare(b.specialty || "");
+            case "available":
+              // This would need backend support for availability count
+              return 0;
+            default:
+              return 0;
+          }
+        });
+
+        renderDoctors(filtered);
+      }
+
+      async function openDoctorModal(doctor) {
+        currentDoctor = doctor;
+        document.getElementById("doctorModalTitle").textContent =
+          doctor.fullName;
+
+        try {
+          const slots = await apiGet(`/api/public/doctors/${doctor.id}/slots`);
+          renderDoctorDetails(doctor, slots);
+          document.getElementById("doctorModal").classList.add("active");
+        } catch (e) {
+          console.error("Failed to load doctor slots:", e);
+        }
+      }
+
+      function renderDoctorDetails(doctor, slots) {
+        const details = document.getElementById("doctorDetails");
+        const initials = doctor.fullName
+          .split(" ")
+          .map((n) => n[0])
+          .join("");
+
+        // Group slots by date
+        const slotsByDate = {};
+        slots.forEach((slot) => {
+          const date = new Date(slot.startTime).toDateString();
+          if (!slotsByDate[date]) {
+            slotsByDate[date] = [];
+          }
+          slotsByDate[date].push(slot);
+        });
+
+        let slotsHTML = "";
+        Object.keys(slotsByDate).forEach((date) => {
+          slotsHTML += `
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem; color: var(--text-muted);">${date}</h3>
+                        <div class="slot-grid">
+                            ${slotsByDate[date]
+                              .map((slot) => {
+                                const time = new Date(
+                                  slot.startTime
+                                ).toLocaleTimeString("en-US", {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: true,
+                                });
+                                const slotClass = slot.available
+                                  ? "available"
+                                  : "booked";
+                                return `
+                                    <div class="slot ${slotClass}" onclick="selectSlot(${slot.id}, '${time}', ${slot.available})">
+                                        ${time}
+                                    </div>
+                                `;
+                              })
+                              .join("")}
+                        </div>
+                    </div>
+                `;
+        });
+
+        details.innerHTML = `
+                <div style="display: flex; gap: 2rem; margin-bottom: 2rem;">
+                    <div class="doctor-avatar" style="width: 80px; height: 80px; font-size: 2rem;">${initials}</div>
+                    <div>
+                        <h2 style="margin-bottom: 0.5rem;">${
+                          doctor.fullName
+                        }</h2>
+                        <p style="color: var(--text-muted); font-size: 1.1rem;">${
+                          doctor.specialty || "General Medicine"
+                        }</p>
+                        <div class="doctor-rating" style="margin-top: 1rem;">
+                            <span class="stars">★★★★★</span>
+                            <span>(4.8) • 127 reviews</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Available Time Slots</h3>
+                    ${
+                      slotsHTML ||
+                      '<p style="color: var(--text-muted);">No available slots at the moment.</p>'
+                    }
+                </div>
+            `;
+      }
+
+      function selectSlot(slotId, time, available) {
+        if (!available) return;
+
+        selectedSlot = { id: slotId, time };
+        document.getElementById(
+          "selectedSlot"
+        ).value = `${currentDoctor.fullName} - ${time}`;
+        closeDoctorModal();
+        document.getElementById("bookingModal").classList.add("active");
+      }
+
+      function closeDoctorModal() {
+        document.getElementById("doctorModal").classList.remove("active");
+      }
+
+      function closeBookingModal() {
+        document.getElementById("bookingModal").classList.remove("active");
+        selectedSlot = null;
+      }
+
+      // Booking form handler
+      document
+        .getElementById("bookingForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          if (!selectedSlot || !currentDoctor) {
+            alert("Please select a time slot first");
+            return;
+          }
+
+          const payload = {
+            patientId: parseInt(document.getElementById("patientId").value),
+            doctorId: currentDoctor.id,
+            slotId: selectedSlot.id,
+          };
+
+          try {
+            const appointmentId = await apiPost(
+              "/api/patient/appointments",
+              payload,
+              true
+            );
+            alert(`Appointment booked successfully! ID: ${appointmentId}`);
+            closeBookingModal();
+            loadMyAppointments();
+            loadDoctors(); // Refresh to update slot availability
+          } catch (e) {
+            alert(`Failed to book appointment: ${e.message}`);
+          }
+        });
+
+      async function loadMyAppointments() {
+        try {
+          // For demo, using patient ID 1. In real app, get from JWT token
+          const appointments = await apiGet(
+            "/api/patient/appointments/1",
+            true
+          );
+          renderMyAppointments(appointments);
+        } catch (e) {
+          console.error("Failed to load appointments:", e);
+        }
+      }
+
+      function renderMyAppointments(appointments) {
+        const container = document.getElementById("myAppointments");
+        container.innerHTML = "";
+
+        if (appointments.length === 0) {
+          container.innerHTML =
+            '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1;">No appointments yet.</p>';
+          return;
+        }
+
+        appointments.forEach((appointment) => {
+          const card = document.createElement("div");
+          card.className = "card";
+
+          const date = new Date(
+            appointment.slot.startTime
+          ).toLocaleDateString();
+          const time = new Date(appointment.slot.startTime).toLocaleTimeString(
+            "en-US",
+            {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }
+          );
+
+          card.innerHTML = `
+                    <h3>Dr. ${appointment.doctor.fullName}</h3>
+                    <p><strong>Date:</strong> ${date}</p>
+                    <p><strong>Time:</strong> ${time}</p>
+                    <p><strong>Status:</strong> <span style="color: ${
+                      appointment.status === "BOOKED"
+                        ? "var(--success)"
+                        : "var(--danger)"
+                    }">${appointment.status}</span></p>
+                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary" onclick="viewReport(${
+                          appointment.id
+                        }, '${appointment.remarks || ""}', '${
+            appointment.prescription || ""
+          }')">View Report</button>
+                        ${
+                          appointment.status === "BOOKED"
+                            ? `<button class="btn btn-outline" onclick="cancelAppointment(${appointment.id})">Cancel</button>`
+                            : ""
+                        }
+                    </div>
+                `;
+
+          container.appendChild(card);
+        });
+      }
+
+      function viewReport(appointmentId, remarks, prescription) {
+        alert(
+          `Medical Report:\n\nRemarks: ${
+            remarks || "No remarks yet"
+          }\n\nPrescription: ${prescription || "No prescription yet"}`
+        );
+      }
+
+      async function cancelAppointment(appointmentId) {
+        if (!confirm("Are you sure you want to cancel this appointment?"))
+          return;
+
+        try {
+          await apiDelete(`/api/patient/appointments/${appointmentId}`, true);
+          alert("Appointment cancelled successfully");
+          loadMyAppointments();
+          loadDoctors(); // Refresh to update slot availability
+        } catch (e) {
+          alert(`Failed to cancel appointment: ${e.message}`);
+        }
+      }
+
+      // Close modals on outside click
+      document.getElementById("doctorModal").addEventListener("click", (e) => {
+        if (e.target.id === "doctorModal") closeDoctorModal();
+      });
+
+      document.getElementById("bookingModal").addEventListener("click", (e) => {
+        if (e.target.id === "bookingModal") closeBookingModal();
+      });
+    </script>
+  </body>
+</html>

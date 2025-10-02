@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/app.css" />
+  </head>
+  <body>
+    <header>
+      <div class="nav">
+        <div class="brand"><span class="dot"></span>Hospital MVP</div>
+        <div>
+          <a href="/">Home</a>
+          <a href="/register">Create account</a>
+        </div>
+      </div>
+    </header>
+    <div class="container">
+      <h2>Sign in</h2>
+      <p class="muted">
+        Use your email and password. Choose your role to proceed.
+      </p>
+      <form id="loginForm">
+        <label>Email <input type="email" id="email" required /></label>
+        <label>Password <input type="password" id="password" required /></label>
+        <label
+          >Sign in as
+          <select id="role">
+            <option value="PATIENT">Patient</option>
+            <option value="DOCTOR">Doctor</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+        </label>
+        <button class="btn primary" type="submit">Login</button>
+      </form>
+      <div id="msg"></div>
+    </div>
+    <script src="/js/app.js"></script>
+    <script>
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          const role = document.getElementById("role").value;
+          try {
+            const res = await apiPost("/api/auth/login", { email, password });
+            saveToken(res.token);
+            const map = {
+              PATIENT: "/patient/dashboard",
+              DOCTOR: "/doctor/dashboard",
+              ADMIN: "/admin/dashboard",
+            };
+            window.location.href = map[role] || "/";
+          } catch (err) {
+            showMsg(err.message, true);
+          }
+        });
+    </script>
+  </body>
+</html>

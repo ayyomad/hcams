@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - MediBook</title>
+    <link rel="stylesheet" href="/css/app.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="nav">
+        <div class="brand">MediBook</div>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="#" onclick="logout()">Logout</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="dashboard">
+      <div class="container">
+        <div class="dashboard-header">
+          <h1 class="dashboard-title">Admin Dashboard</h1>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number" id="totalPatients">0</div>
+            <div class="stat-label">Total Patients</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="totalDoctors">0</div>
+            <div class="stat-label">Total Doctors</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="todayAppointments">0</div>
+            <div class="stat-label">Today's Appointments</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="totalAppointments">0</div>
+            <div class="stat-label">Total Appointments</div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <!-- Appointment Analytics -->
+          <div class="card">
+            <h3>Appointment Analytics</h3>
+            <div class="form-group">
+              <label class="form-label" for="analyticsDate">Select Date</label>
+              <input type="date" id="analyticsDate" class="form-input" />
+            </div>
+            <button
+              class="btn btn-primary"
+              id="getAppointmentCount"
+              style="width: 100%; margin-bottom: 1rem"
+            >
+              Get Appointment Count
+            </button>
+            <div
+              id="appointmentCount"
+              class="stat-card"
+              style="text-align: center"
+            >
+              <div class="stat-number">0</div>
+              <div class="stat-label">Appointments on Selected Date</div>
+            </div>
+          </div>
+
+          <!-- User Management -->
+          <div class="card">
+            <h3>User Management</h3>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem">
+              <button
+                class="btn btn-secondary"
+                id="loadPatients"
+                style="flex: 1"
+              >
+                Load Patients
+              </button>
+              <button
+                class="btn btn-secondary"
+                id="loadDoctors"
+                style="flex: 1"
+              >
+                Load Doctors
+              </button>
+            </div>
+            <div id="userManagement">
+              <p style="color: var(--text-muted); text-align: center">
+                Click a button above to load users
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Overview -->
+        <div class="card" style="margin-top: 2rem">
+          <h3>System Overview</h3>
+          <div class="grid grid-3">
+            <div class="card">
+              <h4>Most Popular Specialties</h4>
+              <div id="specialtyStats">
+                <p style="color: var(--text-muted)">Loading...</p>
+              </div>
+            </div>
+            <div class="card">
+              <h4>Recent Activity</h4>
+              <div id="recentActivity">
+                <p style="color: var(--text-muted)">Loading...</p>
+              </div>
+            </div>
+            <div class="card">
+              <h4>System Health</h4>
+              <div id="systemHealth">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 0.5rem;
+                  "
+                >
+                  <span>Database</span>
+                  <span style="color: var(--success)">✓ Healthy</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 0.5rem;
+                  "
+                >
+                  <span>API Services</span>
+                  <span style="color: var(--success)">✓ Running</span>
+                </div>
+                <div style="display: flex; justify-content: space-between">
+                  <span>Authentication</span>
+                  <span style="color: var(--success)">✓ Active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="/js/app.js"></script>
+    <script>
+      // Load initial data
+      document.addEventListener("DOMContentLoaded", () => {
+        loadSystemStats();
+        loadSpecialtyStats();
+        loadRecentActivity();
+
+        // Set today's date as default
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("analyticsDate").value = today;
+      });
+
+      // Load system statistics
+      async function loadSystemStats() {
+        try {
+          const [patients, doctors] = await Promise.all([
+            apiGet("/api/admin/patients", true),
+            apiGet("/api/admin/doctors", true),
+          ]);
+
+          document.getElementById("totalPatients").textContent =
+            patients.length;
+          document.getElementById("totalDoctors").textContent = doctors.length;
+
+          // Get today's appointment count
+          const today = new Date().toISOString().split("T")[0];
+          try {
+            const todayCount = await apiGet(
+              `/api/admin/appointments/count?day=${today}`,
+              true
+            );
+            document.getElementById("todayAppointments").textContent =
+              todayCount;
+          } catch (e) {
+            console.error("Failed to load today appointments:", e);
+          }
+        } catch (e) {
+          console.error("Failed to load system stats:", e);
+        }
+      }
+
+      // Load specialty statistics
+      async function loadSpecialtyStats() {
+        try {
+          const doctors = await apiGet("/api/admin/doctors", true);
+          const specialtyCount = {};
+
+          doctors.forEach((doctor) => {
+            const specialty = doctor.specialty || "General";
+            specialtyCount[specialty] = (specialtyCount[specialty] || 0) + 1;
+          });
+
+          const sortedSpecialties = Object.entries(specialtyCount)
+            .sort(([, a], [, b]) => b - a)
+            .slice(0, 5);
+
+          const specialtyHTML = sortedSpecialties
+            .map(
+              ([specialty, count]) =>
+                `<div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>${specialty}</span>
+                        <span style="color: var(--primary); font-weight: 600;">${count}</span>
+                    </div>`
+            )
+            .join("");
+
+          document.getElementById("specialtyStats").innerHTML =
+            specialtyHTML ||
+            '<p style="color: var(--text-muted);">No data available</p>';
+        } catch (e) {
+          document.getElementById("specialtyStats").innerHTML =
+            '<p style="color: var(--danger);">Failed to load</p>';
+        }
+      }
+
+      // Load recent activity (mock data)
+      function loadRecentActivity() {
+        const activities = [
+          {
+            action: "New patient registered",
+            time: "2 minutes ago",
+            type: "success",
+          },
+          { action: "Appointment booked", time: "5 minutes ago", type: "info" },
+          {
+            action: "Doctor added new slot",
+            time: "10 minutes ago",
+            type: "info",
+          },
+          {
+            action: "Medical report updated",
+            time: "15 minutes ago",
+            type: "info",
+          },
+          {
+            action: "Appointment cancelled",
+            time: "20 minutes ago",
+            type: "warning",
+          },
+        ];
+
+        const activityHTML = activities
+          .map(
+            (activity) =>
+              `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; padding: 0.5rem; background: var(--surface); border-radius: 0.5rem;">
+                    <div>
+                        <div style="font-size: 0.9rem;">${activity.action}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">${activity.time}</div>
+                    </div>
+                    <span style="color: var(--${activity.type}); font-size: 0.8rem;">●</span>
+                </div>`
+          )
+          .join("");
+
+        document.getElementById("recentActivity").innerHTML = activityHTML;
+      }
+
+      // Get appointment count for specific date
+      document
+        .getElementById("getAppointmentCount")
+        .addEventListener("click", async () => {
+          const date = document.getElementById("analyticsDate").value;
+          if (!date) {
+            alert("Please select a date");
+            return;
+          }
+
+          try {
+            const count = await apiGet(
+              `/api/admin/appointments/count?day=${date}`,
+              true
+            );
+            document.getElementById("appointmentCount").innerHTML = `
+                    <div class="stat-number">${count}</div>
+                    <div class="stat-label">Appointments on ${new Date(
+                      date
+                    ).toLocaleDateString()}</div>
+                `;
+          } catch (e) {
+            alert(`Failed to get appointment count: ${e.message}`);
+          }
+        });
+
+      // Load patients
+      document
+        .getElementById("loadPatients")
+        .addEventListener("click", async () => {
+          try {
+            const patients = await apiGet("/api/admin/patients", true);
+            renderUsers(patients, "Patients");
+          } catch (e) {
+            alert(`Failed to load patients: ${e.message}`);
+          }
+        });
+
+      // Load doctors
+      document
+        .getElementById("loadDoctors")
+        .addEventListener("click", async () => {
+          try {
+            const doctors = await apiGet("/api/admin/doctors", true);
+            renderUsers(doctors, "Doctors");
+          } catch (e) {
+            alert(`Failed to load doctors: ${e.message}`);
+          }
+        });
+
+      function renderUsers(users, type) {
+        const container = document.getElementById("userManagement");
+
+        if (users.length === 0) {
+          container.innerHTML = `<p style="color: var(--text-muted); text-align: center;">No ${type.toLowerCase()} found.</p>`;
+          return;
+        }
+
+        const usersHTML = users
+          .map((user) => {
+            const initials = user.fullName
+              .split(" ")
+              .map((n) => n[0])
+              .join("");
+            const specialty = user.specialty
+              ? `<div style="color: var(--text-muted); font-size: 0.9rem;">${user.specialty}</div>`
+              : "";
+
+            return `
+                    <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 0.5rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                            ${initials}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">${user.fullName}</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem;">${user.email}</div>
+                            ${specialty}
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit</button>
+                            <button class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem; color: var(--danger); border-color: var(--danger);">Delete</button>
+                        </div>
+                    </div>
+                `;
+          })
+          .join("");
+
+        container.innerHTML = `
+                <div style="margin-bottom: 1rem;">
+                    <h4>${type} (${users.length})</h4>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    ${usersHTML}
+                </div>
+            `;
+      }
+
+      // Auto-refresh stats every 30 seconds
+      setInterval(() => {
+        loadSystemStats();
+        loadRecentActivity();
+      }, 30000);
+    </script>
+  </body>
+</html>
