@@ -119,30 +119,115 @@ header {
 }
 
 .hero {
-  padding: 6rem 0;
-  text-align: center;
+  padding: 8rem 0 6rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  position: relative;
+  overflow: hidden;
 }
 
-.hero h1 {
-  font-size: 3.5rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+  opacity: 0.3;
+}
+
+.hero .container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-content {
+  text-align: left;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 2rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.hero-title {
+  font-size: 3.75rem;
+  font-weight: 900;
+  margin-bottom: 1.5rem;
   line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
-.hero p {
+.hero-description {
   font-size: 1.25rem;
-  margin-bottom: 2rem;
-  opacity: 0.9;
+  margin-bottom: 2.5rem;
+  opacity: 0.95;
+  line-height: 1.6;
+  max-width: 90%;
 }
 
 .hero-buttons {
   display: flex;
   gap: 1rem;
-  justify-content: center;
+  margin-bottom: 3rem;
   flex-wrap: wrap;
+}
+
+.btn-large {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  border-radius: 0.75rem;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 3rem;
+  margin-top: 3rem;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hero-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.hero-img {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border: 4px solid rgba(255, 255, 255, 0.2);
 }
 
 .section {
@@ -150,10 +235,62 @@ header {
 }
 
 .section-title {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 2.5rem;
+  font-weight: 800;
   text-align: center;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.section-subtitle {
+  text-align: center;
+  font-size: 1.125rem;
+  color: var(--text-muted);
   margin-bottom: 3rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.feature-card {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+  border-color: var(--primary);
+}
+
+.feature-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  color: white;
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.feature-card p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-muted);
 }
 
 .grid {
@@ -311,6 +448,17 @@ header {
   border-color: var(--secondary);
 }
 
+.slot.disabled-slot {
+  cursor: not-allowed !important;
+  opacity: 0.7;
+}
+
+.slot.disabled-slot:hover {
+  transform: none;
+  border-color: var(--danger);
+  background: var(--danger);
+}
+
 .modal {
   position: fixed;
   top: 0;
@@ -366,6 +514,19 @@ header {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
+}
+
+.checkbox-label {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
 }
 
 .form-input {
@@ -463,7 +624,7 @@ header {
 .stat-number {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--primary);
+  color: white;
 }
 
 .stat-label {

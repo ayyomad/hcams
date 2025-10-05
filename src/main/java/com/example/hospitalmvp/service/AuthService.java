@@ -48,7 +48,7 @@ public class AuthService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole().name());
         claims.put("userId", user.getId());
-        return jwtService.generateToken(user.getEmail(), claims);
+        return jwtService.generateToken(user.getEmail(), claims, req.rememberMe());
     }
 
     public Long registerPatient(AuthDtos.RegisterPatient req) {

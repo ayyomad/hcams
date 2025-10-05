@@ -1,3 +1,4 @@
+com\example\hospitalmvp\controller\ProfileController.class
 com\example\hospitalmvp\controller\PublicController.class
 com\example\hospitalmvp\security\JwtAuthFilter.class
 com\example\hospitalmvp\security\JwtService.class
@@ -38,4 +39,5 @@ com\example\hospitalmvp\dto\AuthDtos.class
 com\example\hospitalmvp\dto\SlotDtos$CreateSlot.class
 com\example\hospitalmvp\repository\PatientRepository.class
 com\example\hospitalmvp\controller\PageController.class
+com\example\hospitalmvp\controller\TestController.class
 com\example\hospitalmvp\entity\user\Admin.class

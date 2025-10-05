@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Profile - MediBook</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+    <style>
+      .profile-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .profile-avatar {
+        width: 100px;
+        height: 100px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+      }
+
+      .profile-info h1 {
+        margin: 0;
+        font-size: 2rem;
+      }
+
+      .profile-info p {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+      }
+
+      .tab-navigation {
+        display: flex;
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+
+      .tab-button {
+        flex: 1;
+        padding: 1rem 2rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .tab-button.active {
+        background: #667eea;
+        color: white;
+      }
+
+      .tab-button:hover:not(.active) {
+        background: #f8f9fa;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .appointment-card {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #667eea;
+      }
+
+      .appointment-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .appointment-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      .status-booked {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+
+      .status-completed {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .status-cancelled {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+
+      .appointment-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+
+      .detail-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .detail-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+      }
+
+      .detail-value {
+        font-weight: 500;
+        color: #1f2937;
+      }
+
+      .prescription-section {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+      }
+
+      .prescription-title {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+      }
+
+      .prescription-content {
+        background: #f9fafb;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        white-space: pre-wrap;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6b7280;
+      }
+
+      .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: #6b7280;
+        font-size: 0.875rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="profile-container">
+      <!-- Profile Header -->
+      <div class="profile-header">
+        <div class="profile-avatar" th:text="${user.fullName.charAt(0)}"></div>
+        <div class="profile-info">
+          <h1 th:text="${user.fullName}">John Patient</h1>
+          <p th:text="${user.email}">patient@example.com</p>
+          <p th:text="${patient.phone}">+1 234 567 8900</p>
+        </div>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="tab-navigation">
+        <button
+          class="tab-button"
+          th:classappend="${activeTab == 'upcoming'} ? 'active'"
+          onclick="showTab('upcoming')"
+        >
+          Upcoming Appointments
+        </button>
+        <button
+          class="tab-button"
+          th:classappend="${activeTab == 'past'} ? 'active'"
+          onclick="showTab('past')"
+        >
+          Past Appointments
+        </button>
+        <button
+          class="tab-button"
+          th:classappend="${activeTab == 'reports'} ? 'active'"
+          onclick="showTab('reports')"
+        >
+          Reports & Documents
+        </button>
+      </div>
+
+      <!-- Upcoming Appointments Tab -->
+      <div
+        id="upcoming"
+        class="tab-content"
+        th:classappend="${activeTab == 'upcoming'} ? 'active'"
+      >
+        <h2>Upcoming Appointments</h2>
+        <div th:if="${upcomingAppointments.isEmpty()}" class="empty-state">
+          <div class="empty-state-icon">📅</div>
+          <h3>No upcoming appointments</h3>
+          <p>You don't have any upcoming appointments scheduled.</p>
+        </div>
+        <div
+          th:each="appointment : ${upcomingAppointments}"
+          class="appointment-card"
+        >
+          <div class="appointment-header">
+            <h3 th:text="${appointment.doctor.fullName}">Dr. Smith</h3>
+            <span class="appointment-status status-booked">BOOKED</span>
+          </div>
+          <div class="appointment-details">
+            <div class="detail-item">
+              <span class="detail-label">Doctor</span>
+              <span
+                class="detail-value"
+                th:text="${appointment.doctor.fullName}"
+                >Dr. Smith</span
+              >
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Specialty</span>
+              <span
+                class="detail-value"
+                th:text="${appointment.doctor.specialty}"
+                >General Medicine</span
+              >
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Date</span>
+              <span
+                class="detail-value"
+                th:text="${#temporals.format(appointment.slot.startTime, 'MMM dd, yyyy')}"
+                >Jan 15, 2024</span
+              >
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Time</span>
+              <span
+                class="detail-value"
+                th:text="${#temporals.format(appointment.slot.startTime, 'hh:mm a')}"
+                >10:00 AM</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Past Appointments Tab -->
+      <div
+        id="past"
+        class="tab-content"
+        th:classappend="${activeTab == 'past'} ? 'active'"
+      >
+        <h2>Past Appointments</h2>
+        <div th:if="${pastAppointments.isEmpty()}" class="empty-state">
+          <div class="empty-state-icon">📋</div>
+          <h3>No past appointments</h3>
+          <p>You haven't had any appointments yet.</p>
+        </div>
+        <div
+          th:each="appointment : ${pastAppointments}"
+          class="appointment-card"
+        >
+          <div class="appointment-header">
+            <h3 th:text="${appointment.doctor.fullName}">Dr. Smith</h3>
+            <span
+              class="appointment-status"
+              th:classappend="${appointment.status.name() == 'COMPLETED'} ? 'status-completed' : 'status-cancelled'"
+              th:text="${appointment.status.name()}"
+              >COMPLETED</span
+            >
+          </div>
+          <div class="appointment-details">
+            <div class="detail-item">
+              <span class="detail-label">Doctor</span>
+              <span
+                class="detail-value"
+                th:text="${appointment.doctor.fullName}"
+                >Dr. Smith</span
+              >
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Specialty</span>
+              <span
+                class="detail-value"
+                th:text="${appointment.doctor.specialty}"
+                >General Medicine</span
+              >
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Date</span>
+              <span
+                class="detail-value"
+                th:text="${#temporals.format(appointment.slot.startTime, 'MMM dd, yyyy')}"
+                >Jan 15, 2024</span
+              >
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Time</span>
+              <span
+                class="detail-value"
+                th:text="${#temporals.format(appointment.slot.startTime, 'hh:mm a')}"
+                >10:00 AM</span
+              >
+            </div>
+          </div>
+          <div
+            th:if="${appointment.remarks != null and !appointment.remarks.isEmpty()}"
+            class="prescription-section"
+          >
+            <div class="prescription-title">Doctor's Notes</div>
+            <div class="prescription-content" th:text="${appointment.remarks}">
+              Patient showed good progress...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reports & Documents Tab -->
+      <div
+        id="reports"
+        class="tab-content"
+        th:classappend="${activeTab == 'reports'} ? 'active'"
+      >
+        <h2>Reports & Documents</h2>
+        <div th:if="${reports.isEmpty()}" class="empty-state">
+          <div class="empty-state-icon">📄</div>
+          <h3>No reports available</h3>
+          <p>
+            Your medical reports and prescriptions will appear here after
+            completed appointments.
+          </p>
+        </div>
+        <div th:each="appointment : ${reports}" class="appointment-card">
+          <div class="appointment-header">
+            <h3 th:text="${appointment.doctor.fullName}">Dr. Smith</h3>
+            <span class="appointment-status status-completed">COMPLETED</span>
+          </div>
+          <div class="appointment-details">
+            <div class="detail-item">
+              <span class="detail-label">Doctor</span>
+              <span
+                class="detail-value"
+                th:text="${appointment.doctor.fullName}"
+                >Dr. Smith</span
+              >
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Specialty</span>
+              <span
+                class="detail-value"
+                th:text="${appointment.doctor.specialty}"
+                >General Medicine</span
+              >
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Date</span>
+              <span
+                class="detail-value"
+                th:text="${#temporals.format(appointment.slot.startTime, 'MMM dd, yyyy')}"
+                >Jan 15, 2024</span
+              >
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Time</span>
+              <span
+                class="detail-value"
+                th:text="${#temporals.format(appointment.slot.startTime, 'hh:mm a')}"
+                >10:00 AM</span
+              >
+            </div>
+          </div>
+          <div
+            th:if="${appointment.remarks != null and !appointment.remarks.isEmpty()}"
+            class="prescription-section"
+          >
+            <div class="prescription-title">Doctor's Notes</div>
+            <div class="prescription-content" th:text="${appointment.remarks}">
+              Patient showed good progress...
+            </div>
+          </div>
+          <div
+            th:if="${appointment.prescription != null and !appointment.prescription.isEmpty()}"
+            class="prescription-section"
+          >
+            <div class="prescription-title">Prescription</div>
+            <div
+              class="prescription-content"
+              th:text="${appointment.prescription}"
+            >
+              Take medication as prescribed...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showTab(tabName) {
+        // Hide all tab contents
+        document.querySelectorAll(".tab-content").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+
+        // Remove active class from all buttons
+        document.querySelectorAll(".tab-button").forEach((button) => {
+          button.classList.remove("active");
+        });
+
+        // Show selected tab content
+        document.getElementById(tabName).classList.add("active");
+
+        // Add active class to clicked button
+        event.target.classList.add("active");
+
+        // Update URL without page reload
+        const url = new URL(window.location);
+        url.searchParams.set("tab", tabName);
+        window.history.pushState({}, "", url);
+      }
+    </script>
+  </body>
+</html>

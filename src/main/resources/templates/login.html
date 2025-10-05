@@ -31,6 +31,10 @@
             <option value="ADMIN">Admin</option>
           </select>
         </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="rememberMe" />
+          <span>Remember me for 7 days</span>
+        </label>
         <button class="btn primary" type="submit">Login</button>
       </form>
       <div id="msg"></div>
@@ -44,8 +48,13 @@
           const email = document.getElementById("email").value;
           const password = document.getElementById("password").value;
           const role = document.getElementById("role").value;
+          const rememberMe = document.getElementById("rememberMe").checked;
           try {
-            const res = await apiPost("/api/auth/login", { email, password });
+            const res = await apiPost("/api/auth/login", {
+              email,
+              password,
+              rememberMe,
+            });
             saveToken(res.token);
             const map = {
               PATIENT: "/patient/dashboard",

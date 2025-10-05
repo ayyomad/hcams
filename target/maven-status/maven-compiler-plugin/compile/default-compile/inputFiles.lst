@@ -4,7 +4,9 @@ D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\controlle
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\controller\DoctorController.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\controller\PageController.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\controller\PatientController.java
+D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\controller\ProfileController.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\controller\PublicController.java
+D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\controller\TestController.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\dto\AppointmentDtos.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\dto\AuthDtos.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\dto\SlotDtos.java

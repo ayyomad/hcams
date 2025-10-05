@@ -29,10 +29,24 @@ public class PublicController {
 
     @GetMapping("/doctors/{doctorId}/slots")
     public ResponseEntity<List<Slot>> listAvailableSlots(@PathVariable Long doctorId,
-            @RequestParam(required = false) String from, @RequestParam(required = false) String to) {
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(required = false) String date) {
         Doctor doctor = doctorRepository.findById(doctorId).orElseThrow();
-        OffsetDateTime start = from != null ? OffsetDateTime.parse(from) : OffsetDateTime.now();
-        OffsetDateTime end = to != null ? OffsetDateTime.parse(to) : start.plusDays(7);
-        return ResponseEntity.ok(slotRepository.findByDoctorAndStartTimeBetweenAndAvailableIsTrue(doctor, start, end));
+
+        OffsetDateTime start, end;
+
+        if (date != null) {
+            // Filter by specific date
+            start = OffsetDateTime.parse(date + "T00:00:00Z");
+            end = start.plusDays(1);
+        } else {
+            // Use from/to parameters or default to next 7 days
+            start = from != null ? OffsetDateTime.parse(from) : OffsetDateTime.now();
+            end = to != null ? OffsetDateTime.parse(to) : start.plusDays(7);
+        }
+
+        // Return ALL slots (both available and booked) for better UI display
+        return ResponseEntity.ok(slotRepository.findByDoctorAndStartTimeBetween(doctor, start, end));
     }
 }

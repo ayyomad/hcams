@@ -1,13 +1,54 @@
-// Basic helper functions for API calls with JWT stored in localStorage
+// Basic helper functions for API calls with JWT stored in localStorage and cookies
 
-function saveToken(token){ localStorage.setItem('jwt', token); }
-function getToken(){ return localStorage.getItem('jwt'); }
-function logout(){ localStorage.removeItem('jwt'); window.location.href='/'; }
+function saveToken(token){ 
+  localStorage.setItem('jwt', token); 
+  document.cookie = `authToken=${token}; path=/; max-age=${30*24*60*60}`; // 30 days
+}
+
+function getToken(){ 
+  const fromStorage = localStorage.getItem('jwt');
+  if(fromStorage) return fromStorage;
+  
+  // Fallback to cookie
+  const cookies = document.cookie.split(';');
+  for(let cookie of cookies){
+    const [name, value] = cookie.trim().split('=');
+    if(name === 'authToken') return value;
+  }
+  return null;
+}
+
+function logout(){ 
+  localStorage.removeItem('jwt'); 
+  document.cookie = 'authToken=; path=/; max-age=0';
+  window.location.href='/'; 
+}
 
 function headers(auth){
   const h = { 'Content-Type': 'application/json' };
   if(auth){ const t = getToken(); if(t) h['Authorization'] = 'Bearer ' + t; }
   return h;
+}
+
+// Check if user is authenticated
+function isAuthenticated(){
+  return getToken() !== null;
+}
+
+// Get current user info from token
+function getCurrentUser(){
+  const token = getToken();
+  if(!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return {
+      email: payload.sub,
+      role: payload.role,
+      userId: payload.userId
+    };
+  } catch(e) {
+    return null;
+  }
 }
 
 async function handle(res){

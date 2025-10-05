@@ -5,13 +5,140 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Doctor Dashboard - MediBook</title>
     <link rel="stylesheet" href="/css/app.css" />
+    <style>
+      .profile-header {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .profile-avatar {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+      }
+
+      .profile-info h1 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      .profile-info p {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #10b981;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: #6b7280;
+        font-size: 0.875rem;
+      }
+
+      .slots-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+      }
+
+      .slot-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .slot-card.available {
+        background: #f0fdf4;
+        border-color: #10b981;
+      }
+
+      .slot-card.unavailable {
+        background: #fef2f2;
+        border-color: #ef4444;
+      }
+
+      .slot-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .slot-time {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .slot-status {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+      }
+
+      .status-available {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .status-unavailable {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+
+      .appointment-card {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #10b981;
+      }
+
+      .btn-sm {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.875rem;
+      }
+    </style>
   </head>
   <body>
     <header>
       <nav class="nav">
         <div class="brand">MediBook</div>
         <div class="nav-links">
-          <a href="/">Home</a>
+          <a href="/profile?tab=today">My Profile</a>
+          <a href="/" onclick="sessionStorage.setItem('fromDashboard', 'true')">Home</a>
           <a href="#" onclick="logout()">Logout</a>
         </div>
       </nav>
@@ -19,11 +146,17 @@
 
     <main class="dashboard">
       <div class="container">
-        <div class="dashboard-header">
-          <h1 class="dashboard-title">Doctor Dashboard</h1>
+        <!-- Profile Header -->
+        <div class="profile-header">
+          <div class="profile-avatar" id="doctorAvatar">D</div>
+          <div class="profile-info">
+            <h1 id="doctorName">Dr. Smith</h1>
+            <p id="doctorEmail">doctor@example.com</p>
+            <p id="doctorSpecialty">General Medicine</p>
+          </div>
         </div>
 
-        <!-- Stats Grid -->
+        <!-- Statistics -->
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-number" id="totalAppointments">0</div>
@@ -34,100 +167,79 @@
             <div class="stat-label">Today's Appointments</div>
           </div>
           <div class="stat-card">
-            <div class="stat-number" id="availableSlots">0</div>
-            <div class="stat-label">Available Slots</div>
+            <div class="stat-number" id="upcomingAppointments">0</div>
+            <div class="stat-label">Upcoming</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="completedAppointments">0</div>
+            <div class="stat-label">Completed</div>
           </div>
         </div>
 
         <div class="grid grid-2">
-          <!-- Create New Slot -->
+          <!-- Manage Time Slots -->
           <div class="card">
-            <h3>Create New Time Slot</h3>
-            <form id="newSlotForm">
-              <div class="form-group">
-                <label class="form-label" for="docId">Doctor ID</label>
-                <input type="number" id="docId" class="form-input" required />
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="startTime">Start Time</label>
-                <input
-                  type="datetime-local"
-                  id="startTime"
-                  class="form-input"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="endTime">End Time</label>
-                <input
-                  type="datetime-local"
-                  id="endTime"
-                  class="form-input"
-                  required
-                />
-              </div>
-              <button type="submit" class="btn btn-primary" style="width: 100%">
-                Create Slot
-              </button>
-            </form>
-          </div>
-
-          <!-- My Slots -->
-          <div class="card">
-            <h3>My Time Slots</h3>
+            <h3>Manage Time Slots</h3>
             <div class="form-group">
-              <label class="form-label" for="docIdForSlots">Doctor ID</label>
-              <input
-                type="number"
-                id="docIdForSlots"
-                class="form-input"
-                required
-              />
+              <label class="form-label" for="slotDate">Select Date</label>
+              <input type="date" id="slotDate" class="form-input" required />
             </div>
             <button
-              class="btn btn-secondary"
-              id="loadSlots"
+              class="btn btn-primary"
+              onclick="loadSlotsForDate()"
               style="width: 100%; margin-bottom: 1rem"
             >
               Load Slots
             </button>
-            <div
-              id="slotList"
-              class="grid"
-              style="grid-template-columns: 1fr; gap: 0.5rem"
-            >
-              <!-- Slots will be loaded here -->
+            <div id="slotsContainer">
+              <p
+                style="
+                  color: var(--text-muted);
+                  text-align: center;
+                  padding: 2rem;
+                "
+              >
+                Select a date to view and manage your time slots
+              </p>
+            </div>
+          </div>
+
+          <!-- Today's Appointments -->
+          <div class="card">
+            <h3>Today's Appointments</h3>
+            <div id="todayAppointmentsList">
+              <p
+                style="
+                  color: var(--text-muted);
+                  text-align: center;
+                  padding: 2rem;
+                "
+              >
+                Loading today's appointments...
+              </p>
             </div>
           </div>
         </div>
 
-        <!-- My Appointments -->
+        <!-- All Appointments -->
         <div class="card" style="margin-top: 2rem">
-          <h3>My Appointments</h3>
-          <div class="form-group">
-            <label class="form-label" for="docIdForAppts">Doctor ID</label>
-            <input
-              type="number"
-              id="docIdForAppts"
-              class="form-input"
-              required
-            />
-          </div>
-          <button
-            class="btn btn-secondary"
-            id="loadAppts"
-            style="width: 100%; margin-bottom: 1rem"
-          >
-            Load Appointments
-          </button>
-          <div id="appointmentsGrid" class="grid grid-3">
-            <!-- Appointments will be loaded here -->
+          <h3>All Appointments</h3>
+          <div id="allAppointmentsList">
+            <p
+              style="
+                color: var(--text-muted);
+                text-align: center;
+                padding: 2rem;
+              "
+            >
+              Loading appointments...
+            </p>
           </div>
         </div>
       </div>
     </main>
 
-    <!-- Add Remarks Modal -->
+    <!-- Add Medical Report Modal -->
     <div id="remarksModal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -166,168 +278,301 @@
     <script src="/js/app.js"></script>
     <script>
       let currentAppointmentId = null;
+      let currentDoctorId = null;
 
-      // Load slots
-      document
-        .getElementById("loadSlots")
-        .addEventListener("click", async () => {
-          const doctorId = document.getElementById("docIdForSlots").value;
-          if (!doctorId) {
-            alert("Please enter Doctor ID");
-            return;
-          }
-
-          try {
-            const slots = await apiGet(`/api/doctor/slots/${doctorId}`, true);
-            renderSlots(slots);
-          } catch (e) {
-            alert(`Failed to load slots: ${e.message}`);
-          }
-        });
-
-      // Load appointments
-      document
-        .getElementById("loadAppts")
-        .addEventListener("click", async () => {
-          const doctorId = document.getElementById("docIdForAppts").value;
-          if (!doctorId) {
-            alert("Please enter Doctor ID");
-            return;
-          }
-
-          try {
-            const appointments = await apiGet(
-              `/api/doctor/appointments/${doctorId}`,
-              true
-            );
-            renderAppointments(appointments);
-            updateStats(appointments);
-          } catch (e) {
-            alert(`Failed to load appointments: ${e.message}`);
-          }
-        });
-
-      function renderSlots(slots) {
-        const container = document.getElementById("slotList");
-        container.innerHTML = "";
-
-        if (slots.length === 0) {
-          container.innerHTML =
-            '<p style="color: var(--text-muted); text-align: center;">No slots found.</p>';
+      // Initialize dashboard
+      document.addEventListener("DOMContentLoaded", () => {
+        // Check if user is authenticated
+        if (!isAuthenticated()) {
+          window.location.href = "/";
           return;
         }
 
-        slots.forEach((slot) => {
-          const slotCard = document.createElement("div");
-          slotCard.className = "card";
+        loadDoctorInfo();
+        loadTodayAppointments();
+        loadAllAppointments();
 
-          const startTime = new Date(slot.startTime).toLocaleString();
-          const endTime = new Date(slot.endTime).toLocaleString();
+        // Set today's date as default
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("slotDate").value = today;
+      });
 
-          slotCard.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <h4>Slot #${slot.id}</h4>
-                            <p style="color: var(--text-muted); margin: 0.25rem 0;">${startTime} - ${endTime}</p>
-                            <span class="btn ${
-                              slot.available ? "btn-primary" : "btn-secondary"
-                            }" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">
-                                ${slot.available ? "Available" : "Booked"}
-                            </span>
-                        </div>
-                        <button class="btn btn-outline" onclick="toggleSlotAvailability(${
-                          slot.id
-                        }, ${!slot.available})">
-                            ${
-                              slot.available
-                                ? "Mark Unavailable"
-                                : "Mark Available"
-                            }
-                        </button>
-                    </div>
-                `;
+      async function loadDoctorInfo() {
+        try {
+          const currentUser = getCurrentUser();
+          if (!currentUser) {
+            window.location.href = "/";
+            return;
+          }
 
-          container.appendChild(slotCard);
-        });
+          // Get doctor ID from JWT token
+          currentDoctorId = currentUser.userId;
+          
+          // Display doctor info
+          document.getElementById("doctorEmail").textContent = currentUser.email;
+          document.getElementById("doctorName").textContent = "Dr. " + currentUser.email.split('@')[0];
+          document.getElementById("doctorAvatar").textContent = currentUser.email.charAt(0).toUpperCase();
+
+          loadStats();
+        } catch (e) {
+          console.error("Failed to load doctor info:", e);
+        }
       }
 
-      function renderAppointments(appointments) {
-        const container = document.getElementById("appointmentsGrid");
-        container.innerHTML = "";
+      async function loadStats() {
+        try {
+          if (!currentDoctorId) return;
+          const appointments = await apiGet(`/api/doctor/appointments/${currentDoctorId}`, true);
+          const today = new Date().toDateString();
+
+          const todayAppointments = appointments.filter(
+            (apt) => new Date(apt.slot.startTime).toDateString() === today
+          );
+
+          const upcomingAppointments = appointments.filter(
+            (apt) =>
+              apt.status === "BOOKED" &&
+              new Date(apt.slot.startTime) > new Date()
+          );
+
+          const completedAppointments = appointments.filter(
+            (apt) => apt.status === "COMPLETED"
+          );
+
+          document.getElementById("totalAppointments").textContent =
+            appointments.length;
+          document.getElementById("todayAppointments").textContent =
+            todayAppointments.length;
+          document.getElementById("upcomingAppointments").textContent =
+            upcomingAppointments.length;
+          document.getElementById("completedAppointments").textContent =
+            completedAppointments.length;
+        } catch (e) {
+          console.error("Failed to load stats:", e);
+        }
+      }
+
+      async function loadTodayAppointments() {
+        try {
+          if (!currentDoctorId) return;
+          const appointments = await apiGet(`/api/doctor/appointments/${currentDoctorId}`, true);
+          const today = new Date().toDateString();
+
+          const todayAppointments = appointments
+            .filter(
+              (apt) => new Date(apt.slot.startTime).toDateString() === today
+            )
+            .sort(
+              (a, b) => new Date(a.slot.startTime) - new Date(b.slot.startTime)
+            );
+
+          renderTodayAppointments(todayAppointments);
+        } catch (e) {
+          console.error("Failed to load today's appointments:", e);
+          document.getElementById("todayAppointmentsList").innerHTML =
+            '<p style="color: var(--danger);">Failed to load appointments</p>';
+        }
+      }
+
+      async function loadAllAppointments() {
+        try {
+          if (!currentDoctorId) return;
+          const appointments = await apiGet(`/api/doctor/appointments/${currentDoctorId}`, true);
+          renderAllAppointments(appointments);
+        } catch (e) {
+          console.error("Failed to load appointments:", e);
+          document.getElementById("allAppointmentsList").innerHTML =
+            '<p style="color: var(--danger);">Failed to load appointments</p>';
+        }
+      }
+
+      function renderTodayAppointments(appointments) {
+        const container = document.getElementById("todayAppointmentsList");
 
         if (appointments.length === 0) {
           container.innerHTML =
-            '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1;">No appointments found.</p>';
+            '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No appointments scheduled for today</p>';
           return;
         }
 
-        appointments.forEach((appointment) => {
-          const card = document.createElement("div");
-          card.className = "card";
+        const appointmentsHTML = appointments
+          .map((apt) => {
+            const time = new Date(apt.slot.startTime).toLocaleTimeString(
+              "en-US",
+              {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              }
+            );
 
-          const date = new Date(
-            appointment.slot.startTime
-          ).toLocaleDateString();
-          const time = new Date(appointment.slot.startTime).toLocaleTimeString(
-            "en-US",
-            {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            }
-          );
+            return `
+            <div class="appointment-card">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <strong>${apt.patient.fullName}</strong><br>
+                  <small style="color: var(--text-muted);">${time}</small>
+                </div>
+                <div>
+                  <button class="btn btn-sm btn-primary" onclick="addRemarks(${apt.id})">
+                    Add Notes
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+          })
+          .join("");
 
-          card.innerHTML = `
-                    <h4>Patient #${appointment.patient.id}</h4>
-                    <p style="color: var(--text-muted); margin: 0.5rem 0;"><strong>Date:</strong> ${date}</p>
-                    <p style="color: var(--text-muted); margin: 0.5rem 0;"><strong>Time:</strong> ${time}</p>
-                    <p style="color: var(--text-muted); margin: 0.5rem 0;"><strong>Status:</strong> 
-                        <span style="color: ${
-                          appointment.status === "BOOKED"
-                            ? "var(--success)"
-                            : "var(--danger)"
-                        }">${appointment.status}</span>
-                    </p>
-                    <div style="margin-top: 1rem;">
-                        <button class="btn btn-primary" style="width: 100%;" onclick="openRemarksModal(${
-                          appointment.id
-                        })">
-                            Add Medical Report
-                        </button>
-                    </div>
-                `;
-
-          container.appendChild(card);
-        });
+        container.innerHTML = appointmentsHTML;
       }
 
-      function updateStats(appointments) {
-        const total = appointments.length;
-        const today = appointments.filter((apt) => {
-          const aptDate = new Date(apt.slot.startTime).toDateString();
-          const todayDate = new Date().toDateString();
-          return aptDate === todayDate;
-        }).length;
+      function renderAllAppointments(appointments) {
+        const container = document.getElementById("allAppointmentsList");
 
-        document.getElementById("totalAppointments").textContent = total;
-        document.getElementById("todayAppointments").textContent = today;
+        if (appointments.length === 0) {
+          container.innerHTML =
+            '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No appointments found</p>';
+          return;
+        }
+
+        const appointmentsHTML = appointments
+          .map((apt) => {
+            const date = new Date(apt.slot.startTime).toLocaleDateString(
+              "en-US",
+              {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+              }
+            );
+            const time = new Date(apt.slot.startTime).toLocaleTimeString(
+              "en-US",
+              {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              }
+            );
+
+            const statusClass =
+              apt.status === "COMPLETED"
+                ? "status-completed"
+                : apt.status === "CANCELLED"
+                ? "status-unavailable"
+                : "status-available";
+
+            return `
+            <div class="appointment-card">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <strong>${apt.patient.fullName}</strong><br>
+                  <small style="color: var(--text-muted);">${date} at ${time}</small>
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span class="slot-status ${statusClass}">${apt.status}</span>
+                  ${
+                    apt.status === "BOOKED"
+                      ? `
+                    <button class="btn btn-sm btn-primary" onclick="addRemarks(${apt.id})">
+                      Add Notes
+                    </button>
+                  `
+                      : ""
+                  }
+                </div>
+              </div>
+            </div>
+          `;
+          })
+          .join("");
+
+        container.innerHTML = appointmentsHTML;
       }
 
-      async function toggleSlotAvailability(slotId, available) {
+      async function loadSlotsForDate() {
+        if (!currentDoctorId) {
+          alert("Doctor ID not found. Please refresh the page.");
+          return;
+        }
+
+        const dateInput = document.getElementById("slotDate");
+        const date = dateInput.value;
+
+        if (!date) {
+          alert("Please select a date");
+          return;
+        }
+
         try {
-          await apiPatch(
-            `/api/doctor/slots/${slotId}/availability?available=${available}`,
-            true
+          const slots = await apiGet(`/api/doctor/slots/${currentDoctorId}`, true);
+          // Filter slots by selected date on frontend for now
+          const selectedDate = new Date(date).toDateString();
+          const filteredSlots = slots.filter(s => 
+            new Date(s.startTime).toDateString() === selectedDate
           );
-          alert("Slot availability updated successfully");
-          // Reload slots
-          document.getElementById("loadSlots").click();
+          renderSlotsForDate(filteredSlots, date);
         } catch (e) {
-          alert(`Failed to update slot: ${e.message}`);
+          console.error("Failed to load slots for date:", e);
+          document.getElementById("slotsContainer").innerHTML =
+            '<p style="color: var(--danger);">Failed to load slots for the selected date.</p>';
         }
       }
 
-      function openRemarksModal(appointmentId) {
+      function renderSlotsForDate(slots, date) {
+        const container = document.getElementById("slotsContainer");
+
+        if (!slots || slots.length === 0) {
+          container.innerHTML =
+            '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No slots found for the selected date.</p>';
+          return;
+        }
+
+        const slotsHTML = slots
+          .map((slot) => {
+            const time = new Date(slot.startTime).toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            });
+
+            const slotClass = slot.available ? "available" : "unavailable";
+            const statusText = slot.available ? "Available" : "Booked";
+
+            return `
+            <div class="slot-card ${slotClass}" onclick="toggleSlot(${slot.id}, ${slot.available})">
+              <div class="slot-time">${time}</div>
+              <div class="slot-status status-${slotClass}">${statusText}</div>
+            </div>
+          `;
+          })
+          .join("");
+
+        container.innerHTML = `
+          <div class="slots-grid">
+            ${slotsHTML}
+          </div>
+        `;
+      }
+
+      async function toggleSlot(slotId, currentStatus) {
+        try {
+          const newStatus = !currentStatus;
+          await apiPost(
+            `/api/doctor/slots/${slotId}/toggle`,
+            { available: newStatus },
+            true
+          );
+
+          // Reload slots for the current date
+          loadSlotsForDate();
+        } catch (e) {
+          console.error("Failed to toggle slot:", e);
+          alert("Failed to update slot availability");
+        }
+      }
+
+      function addRemarks(appointmentId) {
         currentAppointmentId = appointmentId;
         document.getElementById("remarksModal").classList.add("active");
       }
@@ -338,36 +583,7 @@
         document.getElementById("remarksForm").reset();
       }
 
-      // Create new slot form
-      document
-        .getElementById("newSlotForm")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-
-          const doctorId = parseInt(document.getElementById("docId").value);
-          const startTime = document.getElementById("startTime").value;
-          const endTime = document.getElementById("endTime").value;
-
-          // Convert to ISO format
-          const startISO = new Date(startTime).toISOString();
-          const endISO = new Date(endTime).toISOString();
-
-          const payload = {
-            doctorId: doctorId,
-            startTime: startISO,
-            endTime: endISO,
-          };
-
-          try {
-            const slotId = await apiPost("/api/doctor/slots", payload, true);
-            alert(`Slot created successfully! ID: ${slotId}`);
-            document.getElementById("newSlotForm").reset();
-          } catch (e) {
-            alert(`Failed to create slot: ${e.message}`);
-          }
-        });
-
-      // Add remarks form
+      // Handle remarks form submission
       document
         .getElementById("remarksForm")
         .addEventListener("submit", async (e) => {
@@ -381,32 +597,25 @@
           const remarks = document.getElementById("remarks").value;
           const prescription = document.getElementById("prescription").value;
 
-          const payload = {
-            remarks: remarks,
-            prescription: prescription,
-          };
-
           try {
-            await apiPatch(
+            await apiPost(
               `/api/doctor/appointments/${currentAppointmentId}/remarks`,
-              true,
-              payload
+              {
+                remarks: remarks,
+                prescription: prescription,
+              },
+              true
             );
+
             alert("Medical report saved successfully");
             closeRemarksModal();
-            // Reload appointments
-            document.getElementById("loadAppts").click();
+            loadTodayAppointments();
+            loadAllAppointments();
           } catch (e) {
-            alert(`Failed to save report: ${e.message}`);
+            console.error("Failed to save remarks:", e);
+            alert("Failed to save medical report");
           }
         });
-
-      // Close modal on outside click
-      document.getElementById("remarksModal").addEventListener("click", (e) => {
-        if (e.target.id === "remarksModal") {
-          closeRemarksModal();
-        }
-      });
     </script>
   </body>
 </html>

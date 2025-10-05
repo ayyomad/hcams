@@ -37,6 +37,19 @@ public class JwtService {
                 .compact();
     }
 
+    public String generateToken(String subject, Map<String, Object> claims, boolean rememberMe) {
+        Date now = new Date();
+        long tokenExpiration = rememberMe ? expirationMs * 7 : expirationMs; // 7 days for remember me
+        Date expiry = new Date(now.getTime() + tokenExpiration);
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())

@@ -11,7 +11,7 @@
       <nav class="nav">
         <div class="brand">MediBook</div>
         <div class="nav-links">
-          <a href="/">Home</a>
+          <a href="/" onclick="sessionStorage.setItem('fromDashboard', 'true')">Home</a>
           <a href="#" onclick="logout()">Logout</a>
         </div>
       </nav>
@@ -149,6 +149,12 @@
     <script>
       // Load initial data
       document.addEventListener("DOMContentLoaded", () => {
+        // Check if user is authenticated
+        if (!isAuthenticated()) {
+          window.location.href = "/";
+          return;
+        }
+
         loadSystemStats();
         loadSpecialtyStats();
         loadRecentActivity();

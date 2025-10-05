@@ -1,1 +1,3 @@
+com\example\hospitalmvp\service\AppointmentServiceTest.class
 com\example\hospitalmvp\AppointmentServiceTest.class
+com\example\hospitalmvp\integration\AppointmentIntegrationTest.class

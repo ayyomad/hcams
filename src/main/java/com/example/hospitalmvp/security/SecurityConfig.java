@@ -35,13 +35,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/register", "/doctor-login", "/admin-login",
-                                "/css/**", "/js/**", "/images/**")
+                                "/css/**", "/js/**", "/images/**", "/profile")
                         .permitAll()
                         // Allow GET to dashboards so pages load; API endpoints remain protected
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/patient/**", "/doctor/**",
                                 "/admin/**")
                         .permitAll()
-                        .requestMatchers("/api/auth/**", "/api/public/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/public/**", "/api/test/**").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

@@ -33,53 +33,82 @@ public class AppointmentService {
 
     @Transactional
     public Long book(AppointmentDtos.BookRequest req) {
-        Patient patient = patientRepository.findById(req.patientId()).orElseThrow();
-        Doctor doctor = doctorRepository.findById(req.doctorId()).orElseThrow();
-        Slot slot = slotRepository.findById(req.slotId()).orElseThrow();
-        if (!slot.isAvailable())
-            throw new IllegalStateException("Slot not available");
-        if (!slot.getDoctor().getId().equals(doctor.getId()))
-            throw new IllegalArgumentException("Slot not for doctor");
+        // Validate patient exists
+        Patient patient = patientRepository.findById(req.patientId())
+                .orElseThrow(() -> new IllegalArgumentException("Patient not found with ID: " + req.patientId()));
+
+        // Validate doctor exists
+        Doctor doctor = doctorRepository.findById(req.doctorId())
+                .orElseThrow(() -> new IllegalArgumentException("Doctor not found with ID: " + req.doctorId()));
+
+        // Validate slot exists
+        Slot slot = slotRepository.findById(req.slotId())
+                .orElseThrow(() -> new IllegalArgumentException("Slot not found with ID: " + req.slotId()));
+
+        // Check if slot is available
+        if (!slot.isAvailable()) {
+            throw new IllegalStateException("This time slot is no longer available");
+        }
+
+        // Verify slot belongs to the specified doctor
+        if (!slot.getDoctor().getId().equals(doctor.getId())) {
+            throw new IllegalArgumentException("This slot does not belong to the specified doctor");
+        }
+
+        // Check for double booking
         boolean exists = appointmentRepository.existsBySlotAndStatusIn(slot, List.of(AppointmentStatus.BOOKED));
-        if (exists)
-            throw new IllegalStateException("Slot already booked");
+        if (exists) {
+            throw new IllegalStateException("This slot has already been booked by another patient");
+        }
+
+        // Book the appointment
         slot.setAvailable(false);
         Appointment appointment = new Appointment();
         appointment.setPatient(patient);
         appointment.setDoctor(doctor);
         appointment.setSlot(slot);
         appointment.setStatus(AppointmentStatus.BOOKED);
+
         slotRepository.save(slot);
         return appointmentRepository.save(appointment).getId();
     }
 
     @Transactional
     public void cancel(Long appointmentId) {
-        Appointment a = appointmentRepository.findById(appointmentId).orElseThrow();
-        if (a.getStatus() == AppointmentStatus.CANCELLED)
-            return;
-        a.setStatus(AppointmentStatus.CANCELLED);
-        Slot slot = a.getSlot();
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Appointment not found with ID: " + appointmentId));
+
+        if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            throw new IllegalStateException("Appointment is already cancelled");
+        }
+
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+        Slot slot = appointment.getSlot();
         slot.setAvailable(true);
+
         slotRepository.save(slot);
-        appointmentRepository.save(a);
+        appointmentRepository.save(appointment);
     }
 
     public List<Appointment> patientAppointments(Long patientId) {
-        Patient p = patientRepository.findById(patientId).orElseThrow();
-        return appointmentRepository.findByPatient(p);
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new IllegalArgumentException("Patient not found with ID: " + patientId));
+        return appointmentRepository.findByPatient(patient);
     }
 
     public List<Appointment> doctorAppointments(Long doctorId) {
-        Doctor d = doctorRepository.findById(doctorId).orElseThrow();
-        return appointmentRepository.findByDoctor(d);
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new IllegalArgumentException("Doctor not found with ID: " + doctorId));
+        return appointmentRepository.findByDoctor(doctor);
     }
 
     @Transactional
     public void updateRemarks(Long appointmentId, String remarks, String prescription) {
-        Appointment a = appointmentRepository.findById(appointmentId).orElseThrow();
-        a.setRemarks(remarks);
-        a.setPrescription(prescription);
-        appointmentRepository.save(a);
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Appointment not found with ID: " + appointmentId));
+
+        appointment.setRemarks(remarks);
+        appointment.setPrescription(prescription);
+        appointmentRepository.save(appointment);
     }
 }

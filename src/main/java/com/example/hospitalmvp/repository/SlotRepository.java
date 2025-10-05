@@ -12,6 +12,8 @@ public interface SlotRepository extends JpaRepository<Slot, Long> {
     List<Slot> findByDoctorAndStartTimeBetweenAndAvailableIsTrue(Doctor doctor, OffsetDateTime start,
             OffsetDateTime end);
 
+    List<Slot> findByDoctorAndStartTimeBetween(Doctor doctor, OffsetDateTime start, OffsetDateTime end);
+
     List<Slot> findByDoctor(Doctor doctor);
 
     Optional<Slot> findByDoctorAndStartTime(Doctor doctor, OffsetDateTime startTime);

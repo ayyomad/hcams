@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctor Dashboard - MediBook</title>
+    <link rel="stylesheet" href="/css/app.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="nav">
+        <div class="brand">MediBook</div>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="#" onclick="logout()">Logout</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="dashboard">
+      <div class="container">
+        <div class="dashboard-header">
+          <h1 class="dashboard-title">Doctor Dashboard</h1>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number" id="totalAppointments">0</div>
+            <div class="stat-label">Total Appointments</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="todayAppointments">0</div>
+            <div class="stat-label">Today's Appointments</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="availableSlots">0</div>
+            <div class="stat-label">Available Slots</div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <!-- Manage Time Slots -->
+          <div class="card">
+            <h3>Manage Time Slots</h3>
+            <div class="form-group">
+              <label class="form-label" for="slotDate">Select Date</label>
+              <input type="date" id="slotDate" class="form-input" required />
+            </div>
+            <button class="btn btn-primary" onclick="loadSlotsForDate()" style="width: 100%; margin-bottom: 1rem;">
+              Load Slots
+            </button>
+            <div id="slotsContainer">
+              <p style="color: var(--text-muted); text-align: center; padding: 2rem;">
+                Select a date to view and manage your time slots
+              </p>
+            </div>
+          </div>
+
+          <!-- Today's Appointments -->
+          <div class="card">
+            <h3>Today's Appointments</h3>
+            <div id="todayAppointmentsList">
+              <p style="color: var(--text-muted); text-align: center; padding: 2rem;">
+                Loading today's appointments...
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Appointments -->
+        <div class="card" style="margin-top: 2rem">
+          <h3>My Appointments</h3>
+          <div class="form-group">
+            <label class="form-label" for="docIdForAppts">Doctor ID</label>
+            <input
+              type="number"
+              id="docIdForAppts"
+              class="form-input"
+              required
+            />
+          </div>
+          <button
+            class="btn btn-secondary"
+            id="loadAppts"
+            style="width: 100%; margin-bottom: 1rem"
+          >
+            Load Appointments
+          </button>
+          <div id="appointmentsGrid" class="grid grid-3">
+            <!-- Appointments will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Add Remarks Modal -->
+    <div id="remarksModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add Medical Report</h2>
+          <button class="close-btn" onclick="closeRemarksModal()">
+            &times;
+          </button>
+        </div>
+
+        <form id="remarksForm">
+          <div class="form-group">
+            <label class="form-label" for="remarks">Medical Remarks</label>
+            <textarea
+              id="remarks"
+              class="form-input"
+              rows="4"
+              placeholder="Enter your medical observations and notes..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="prescription">Prescription</label>
+            <textarea
+              id="prescription"
+              class="form-input"
+              rows="4"
+              placeholder="Enter prescribed medications and instructions..."
+            ></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            Save Report
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+      let currentAppointmentId = null;
+
+      // Load slots
+      document
+        .getElementById("loadSlots")
+        .addEventListener("click", async () => {
+          const doctorId = document.getElementById("docIdForSlots").value;
+          if (!doctorId) {
+            alert("Please enter Doctor ID");
+            return;
+          }
+
+          try {
+            const slots = await apiGet(`/api/doctor/slots/${doctorId}`, true);
+            renderSlots(slots);
+          } catch (e) {
+            alert(`Failed to load slots: ${e.message}`);
+          }
+        });
+
+      // Load appointments
+      document
+        .getElementById("loadAppts")
+        .addEventListener("click", async () => {
+          const doctorId = document.getElementById("docIdForAppts").value;
+          if (!doctorId) {
+            alert("Please enter Doctor ID");
+            return;
+          }
+
+          try {
+            const appointments = await apiGet(
+              `/api/doctor/appointments/${doctorId}`,
+              true
+            );
+            renderAppointments(appointments);
+            updateStats(appointments);
+          } catch (e) {
+            alert(`Failed to load appointments: ${e.message}`);
+          }
+        });
+
+      function renderSlots(slots) {
+        const container = document.getElementById("slotList");
+        container.innerHTML = "";
+
+        if (slots.length === 0) {
+          container.innerHTML =
+            '<p style="color: var(--text-muted); text-align: center;">No slots found.</p>';
+          return;
+        }
+
+        slots.forEach((slot) => {
+          const slotCard = document.createElement("div");
+          slotCard.className = "card";
+
+          const startTime = new Date(slot.startTime).toLocaleString();
+          const endTime = new Date(slot.endTime).toLocaleString();
+
+          slotCard.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4>Slot #${slot.id}</h4>
+                            <p style="color: var(--text-muted); margin: 0.25rem 0;">${startTime} - ${endTime}</p>
+                            <span class="btn ${
+                              slot.available ? "btn-primary" : "btn-secondary"
+                            }" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">
+                                ${slot.available ? "Available" : "Booked"}
+                            </span>
+                        </div>
+                        <button class="btn btn-outline" onclick="toggleSlotAvailability(${
+                          slot.id
+                        }, ${!slot.available})">
+                            ${
+                              slot.available
+                                ? "Mark Unavailable"
+                                : "Mark Available"
+                            }
+                        </button>
+                    </div>
+                `;
+
+          container.appendChild(slotCard);
+        });
+      }
+
+      function renderAppointments(appointments) {
+        const container = document.getElementById("appointmentsGrid");
+        container.innerHTML = "";
+
+        if (appointments.length === 0) {
+          container.innerHTML =
+            '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1;">No appointments found.</p>';
+          return;
+        }
+
+        appointments.forEach((appointment) => {
+          const card = document.createElement("div");
+          card.className = "card";
+
+          const date = new Date(
+            appointment.slot.startTime
+          ).toLocaleDateString();
+          const time = new Date(appointment.slot.startTime).toLocaleTimeString(
+            "en-US",
+            {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }
+          );
+
+          card.innerHTML = `
+                    <h4>Patient #${appointment.patient.id}</h4>
+                    <p style="color: var(--text-muted); margin: 0.5rem 0;"><strong>Date:</strong> ${date}</p>
+                    <p style="color: var(--text-muted); margin: 0.5rem 0;"><strong>Time:</strong> ${time}</p>
+                    <p style="color: var(--text-muted); margin: 0.5rem 0;"><strong>Status:</strong> 
+                        <span style="color: ${
+                          appointment.status === "BOOKED"
+                            ? "var(--success)"
+                            : "var(--danger)"
+                        }">${appointment.status}</span>
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn btn-primary" style="width: 100%;" onclick="openRemarksModal(${
+                          appointment.id
+                        })">
+                            Add Medical Report
+                        </button>
+                    </div>
+                `;
+
+          container.appendChild(card);
+        });
+      }
+
+      function updateStats(appointments) {
+        const total = appointments.length;
+        const today = appointments.filter((apt) => {
+          const aptDate = new Date(apt.slot.startTime).toDateString();
+          const todayDate = new Date().toDateString();
+          return aptDate === todayDate;
+        }).length;
+
+        document.getElementById("totalAppointments").textContent = total;
+        document.getElementById("todayAppointments").textContent = today;
+      }
+
+      async function toggleSlotAvailability(slotId, available) {
+        try {
+          await apiPatch(
+            `/api/doctor/slots/${slotId}/availability?available=${available}`,
+            true
+          );
+          alert("Slot availability updated successfully");
+          // Reload slots
+          document.getElementById("loadSlots").click();
+        } catch (e) {
+          alert(`Failed to update slot: ${e.message}`);
+        }
+      }
+
+      function openRemarksModal(appointmentId) {
+        currentAppointmentId = appointmentId;
+        document.getElementById("remarksModal").classList.add("active");
+      }
+
+      function closeRemarksModal() {
+        document.getElementById("remarksModal").classList.remove("active");
+        currentAppointmentId = null;
+        document.getElementById("remarksForm").reset();
+      }
+
+      // Create new slot form
+      document
+        .getElementById("newSlotForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const doctorId = parseInt(document.getElementById("docId").value);
+          const startTime = document.getElementById("startTime").value;
+          const endTime = document.getElementById("endTime").value;
+
+          // Convert to ISO format
+          const startISO = new Date(startTime).toISOString();
+          const endISO = new Date(endTime).toISOString();
+
+          const payload = {
+            doctorId: doctorId,
+            startTime: startISO,
+            endTime: endISO,
+          };
+
+          try {
+            const slotId = await apiPost("/api/doctor/slots", payload, true);
+            alert(`Slot created successfully! ID: ${slotId}`);
+            document.getElementById("newSlotForm").reset();
+          } catch (e) {
+            alert(`Failed to create slot: ${e.message}`);
+          }
+        });
+
+      // Add remarks form
+      document
+        .getElementById("remarksForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          if (!currentAppointmentId) {
+            alert("No appointment selected");
+            return;
+          }
+
+          const remarks = document.getElementById("remarks").value;
+          const prescription = document.getElementById("prescription").value;
+
+          const payload = {
+            remarks: remarks,
+            prescription: prescription,
+          };
+
+          try {
+            await apiPatch(
+              `/api/doctor/appointments/${currentAppointmentId}/remarks`,
+              true,
+              payload
+            );
+            alert("Medical report saved successfully");
+            closeRemarksModal();
+            // Reload appointments
+            document.getElementById("loadAppts").click();
+          } catch (e) {
+            alert(`Failed to save report: ${e.message}`);
+          }
+        });
+
+      // Close modal on outside click
+      document.getElementById("remarksModal").addEventListener("click", (e) => {
+        if (e.target.id === "remarksModal") {
+          closeRemarksModal();
+        }
+      });
+    </script>
+  </body>
+</html>
