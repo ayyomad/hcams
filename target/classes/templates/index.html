@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MediBook - Book Doctor Appointments Online</title>
+    <title>HCAMS - Healthcare Appointment Management System</title>
     <link rel="stylesheet" href="/css/app.css" />
   </head>
   <body>
     <header>
       <nav class="nav">
-        <div class="brand">MediBook</div>
+        <div class="brand">HCAMS</div>
         <div class="nav-links">
           <a href="#about">About</a>
           <a href="#services">Services</a>
@@ -24,7 +24,7 @@
       <section class="hero">
         <div class="container">
           <div class="hero-content">
-            <div class="hero-badge">🏥 Trusted Healthcare Platform</div>
+            <div class="hero-badge">Trusted Healthcare Platform</div>
             <h1 class="hero-title">Your Health,<br/>Our Priority</h1>
             <p class="hero-description">
               Connect with top-rated doctors, book appointments instantly, and manage your healthcare journey all in one place. Professional, secure, and convenient.
@@ -57,7 +57,7 @@
           </div>
           <div class="hero-image">
             <img
-              src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+              src="https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Professional healthcare consultation"
               class="hero-img"
             />
@@ -68,7 +68,7 @@
 
       <section id="about" class="section">
         <div class="container">
-          <h2 class="section-title">Why Choose MediBook?</h2>
+          <h2 class="section-title">Why Choose HCAMS?</h2>
           <p class="section-subtitle">Experience healthcare that's designed around you</p>
           <div class="grid grid-3">
             <div class="feature-card">
@@ -115,41 +115,106 @@
         </div>
       </section>
 
-      <section id="services" class="section">
+      <section id="services" class="section specialties-section">
         <div class="container">
           <h2 class="section-title">Popular Specialties</h2>
-          <div class="grid grid-4">
-            <div class="card">
-              <h3>Cardiology</h3>
-              <p>Heart and vascular care</p>
+          <p class="section-subtitle">Book appointments with top specialists across various medical fields</p>
+          <div class="specialties-grid">
+            <div class="specialty-card">
+              <div class="specialty-icon cardiology">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+              </div>
+              <h3 class="specialty-name">Cardiology</h3>
+              <p class="specialty-desc">Heart and vascular care</p>
+              <button class="specialty-btn" onclick="openAuthModal()">Book Now</button>
             </div>
-            <div class="card">
-              <h3>Dermatology</h3>
-              <p>Skin, hair, and nail care</p>
+
+            <div class="specialty-card">
+              <div class="specialty-icon dermatology">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <circle cx="12" cy="12" r="6"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+              </div>
+              <h3 class="specialty-name">Dermatology</h3>
+              <p class="specialty-desc">Skin, hair, and nail care</p>
+              <button class="specialty-btn" onclick="openAuthModal()">Book Now</button>
             </div>
-            <div class="card">
-              <h3>Pediatrics</h3>
-              <p>Care for infants and children</p>
+
+            <div class="specialty-card">
+              <div class="specialty-icon pediatrics">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2a10 10 0 1 0 0 20 10 10 0 1 0 0-20z"></path>
+                  <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                  <circle cx="9" cy="9" r="1"></circle>
+                  <circle cx="15" cy="9" r="1"></circle>
+                </svg>
+              </div>
+              <h3 class="specialty-name">Pediatrics</h3>
+              <p class="specialty-desc">Care for infants and children</p>
+              <button class="specialty-btn" onclick="openAuthModal()">Book Now</button>
             </div>
-            <div class="card">
-              <h3>Orthopedics</h3>
-              <p>Bones and joints</p>
+
+            <div class="specialty-card">
+              <div class="specialty-icon orthopedics">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v20M2 12h20M5.93 5.93l12.14 12.14M5.93 18.07L18.07 5.93"></path>
+                </svg>
+              </div>
+              <h3 class="specialty-name">Orthopedics</h3>
+              <p class="specialty-desc">Bones and joints</p>
+              <button class="specialty-btn" onclick="openAuthModal()">Book Now</button>
             </div>
-            <div class="card">
-              <h3>Neurology</h3>
-              <p>Brain and nervous system</p>
+
+            <div class="specialty-card">
+              <div class="specialty-icon neurology">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+                </svg>
+              </div>
+              <h3 class="specialty-name">Neurology</h3>
+              <p class="specialty-desc">Brain and nervous system</p>
+              <button class="specialty-btn" onclick="openAuthModal()">Book Now</button>
             </div>
-            <div class="card">
-              <h3>ENT</h3>
-              <p>Ears, nose, and throat</p>
+
+            <div class="specialty-card">
+              <div class="specialty-icon ent">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"></path>
+                </svg>
+              </div>
+              <h3 class="specialty-name">ENT</h3>
+              <p class="specialty-desc">Ears, nose, and throat</p>
+              <button class="specialty-btn" onclick="openAuthModal()">Book Now</button>
             </div>
-            <div class="card">
-              <h3>Gynecology</h3>
-              <p>Women's health care</p>
+
+            <div class="specialty-card">
+              <div class="specialty-icon gynecology">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="8" r="6"></circle>
+                  <path d="M12 14v8M8 18h8"></path>
+                </svg>
+              </div>
+              <h3 class="specialty-name">Gynecology</h3>
+              <p class="specialty-desc">Women's health care</p>
+              <button class="specialty-btn" onclick="openAuthModal()">Book Now</button>
             </div>
-            <div class="card">
-              <h3>Psychiatry</h3>
-              <p>Mental health support</p>
+
+            <div class="specialty-card">
+              <div class="specialty-icon psychiatry">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v6M12 16v6M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h6M16 12h6M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </div>
+              <h3 class="specialty-name">Psychiatry</h3>
+              <p class="specialty-desc">Mental health support</p>
+              <button class="specialty-btn" onclick="openAuthModal()">Book Now</button>
             </div>
           </div>
         </div>
@@ -158,7 +223,7 @@
 
     <footer class="footer">
       <div class="container">
-        <p>&copy; 2024 MediBook. All rights reserved.</p>
+        <p>&copy; 2024 HCAMS. All rights reserved.</p>
       </div>
     </footer>
 
@@ -166,7 +231,7 @@
     <div id="authModal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
-          <h2 class="modal-title">Welcome to MediBook</h2>
+          <h2 class="modal-title">Welcome to HCAMS</h2>
           <button class="close-btn" onclick="closeAuthModal()">&times;</button>
         </div>
 
@@ -206,37 +271,65 @@
 
         <div id="signupTab" style="display: none">
           <form id="signupForm">
-            <div class="form-group">
-              <label class="form-label" for="signupName">Full Name</label>
-              <input type="text" id="signupName" class="form-input" required />
+            <div id="step1" style="display: block;">
+              <div class="form-group">
+                <label class="form-label" for="signupEmail">Email</label>
+                <input
+                  type="email"
+                  id="signupEmail"
+                  class="form-input"
+                  required
+                />
+              </div>
+              <button type="button" class="btn btn-primary" style="width: 100%" onclick="sendOtpToEmail()">
+                Send Verification Code
+              </button>
             </div>
-            <div class="form-group">
-              <label class="form-label" for="signupEmail">Email</label>
-              <input
-                type="email"
-                id="signupEmail"
-                class="form-input"
-                required
-              />
+            
+            <div id="step2" style="display: none;">
+              <div class="form-group">
+                <label class="form-label" for="otpCode">Enter OTP</label>
+                <input
+                  type="text"
+                  id="otpCode"
+                  class="form-input"
+                  placeholder="Enter 6-digit code"
+                  maxlength="6"
+                  required
+                />
+                <small style="color: var(--text-muted);">Check your email for the verification code</small>
+              </div>
+              <button type="button" class="btn btn-primary" style="width: 100%" onclick="verifyOtpCode()">
+                Verify Code
+              </button>
+              <button type="button" class="btn btn-outline" style="width: 100%; margin-top: 0.5rem;" onclick="backToStep1()">
+                Change Email
+              </button>
             </div>
-            <div class="form-group">
-              <label class="form-label" for="signupPhone"
-                >Phone (Optional)</label
-              >
-              <input type="tel" id="signupPhone" class="form-input" />
+            
+            <div id="step3" style="display: none;">
+              <div class="form-group">
+                <label class="form-label" for="signupName">Full Name</label>
+                <input type="text" id="signupName" class="form-input" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="signupPhone">Phone (Optional)</label>
+                <input type="tel" id="signupPhone" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="signupPassword">Password</label>
+                <input
+                  type="password"
+                  id="signupPassword"
+                  class="form-input"
+                  minlength="6"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%">
+                Create Account
+              </button>
             </div>
-            <div class="form-group">
-              <label class="form-label" for="signupPassword">Password</label>
-              <input
-                type="password"
-                id="signupPassword"
-                class="form-input"
-                required
-              />
-            </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%">
-              Create Account
-            </button>
           </form>
         </div>
 
@@ -328,14 +421,70 @@
           }
         });
 
+      // OTP Flow functions
+      let verifiedEmail = null;
+      
+      async function sendOtpToEmail() {
+        const email = document.getElementById("signupEmail").value;
+        if (!email) {
+          showAlert("Please enter a valid email", "error");
+          return;
+        }
+        
+        try {
+          await apiPost("/api/auth/send-otp", { email });
+          showAlert("OTP sent to " + email + ". Check your inbox!", "success");
+          document.getElementById("step1").style.display = "none";
+          document.getElementById("step2").style.display = "block";
+        } catch (err) {
+          showAlert(err.message || "Failed to send OTP", "error");
+        }
+      }
+      
+      async function verifyOtpCode() {
+        const email = document.getElementById("signupEmail").value;
+        const otp = document.getElementById("otpCode").value;
+        
+        if (!otp || otp.length !== 6) {
+          showAlert("Please enter the 6-digit code", "error");
+          return;
+        }
+        
+        try {
+          const res = await apiPost("/api/auth/verify-otp", { email, otp });
+          if (res.valid) {
+            verifiedEmail = email;
+            showAlert("Email verified! Complete your registration.", "success");
+            document.getElementById("step2").style.display = "none";
+            document.getElementById("step3").style.display = "block";
+          } else {
+            showAlert("Invalid or expired OTP. Please try again.", "error");
+          }
+        } catch (err) {
+          showAlert(err.message || "Verification failed", "error");
+        }
+      }
+      
+      function backToStep1() {
+        document.getElementById("step2").style.display = "none";
+        document.getElementById("step1").style.display = "block";
+        document.getElementById("otpCode").value = "";
+      }
+
       // Signup form handler
       document
         .getElementById("signupForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
+          
+          if (!verifiedEmail) {
+            showAlert("Please verify your email first", "error");
+            return;
+          }
+          
           const payload = {
             fullName: document.getElementById("signupName").value,
-            email: document.getElementById("signupEmail").value,
+            email: verifiedEmail,
             phone: document.getElementById("signupPhone").value,
             password: document.getElementById("signupPassword").value,
           };
@@ -344,10 +493,19 @@
             await apiPost("/api/auth/register/patient", payload);
             showAlert("Account created successfully! Please login.", "success");
             setTimeout(() => {
+              // Reset signup form
+              document.getElementById("step1").style.display = "block";
+              document.getElementById("step2").style.display = "none";
+              document.getElementById("step3").style.display = "none";
+              verifiedEmail = null;
+              document.getElementById("signupEmail").value = "";
+              document.getElementById("otpCode").value = "";
+              
+              // Switch to login tab
               document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
               document.querySelectorAll(".tab")[0].classList.add("active");
               switchTab("login");
-            }, 1000);
+            }, 1500);
           } catch (err) {
             showAlert(err.message, "error");
           }

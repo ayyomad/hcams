@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Profile - MediBook</title>
+    <title>My Profile - HCAMS</title>
     <link rel="stylesheet" th:href="@{/css/app.css}" />
     <style>
       .profile-container {
@@ -202,6 +202,17 @@
     </style>
   </head>
   <body>
+    <header>
+      <nav class="nav">
+        <div class="brand">HCAMS</div>
+        <div class="nav-links">
+          <a href="/patient/dashboard">Dashboard</a>
+          <a href="/" onclick="sessionStorage.setItem('fromDashboard', 'true')">Home</a>
+          <a href="#" onclick="logout()">Logout</a>
+        </div>
+      </nav>
+    </header>
+    
     <div class="profile-container">
       <!-- Profile Header -->
       <div class="profile-header">
@@ -469,5 +480,6 @@
         window.history.pushState({}, "", url);
       }
     </script>
+    <script src="/js/app.js"></script>
   </body>
 </html>

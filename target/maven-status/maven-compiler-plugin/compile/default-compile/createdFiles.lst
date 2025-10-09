@@ -9,6 +9,7 @@ com\example\hospitalmvp\entity\Appointment.class
 com\example\hospitalmvp\entity\AppointmentStatus.class
 com\example\hospitalmvp\entity\Role.class
 com\example\hospitalmvp\security\SecurityConfig.class
+com\example\hospitalmvp\repository\OtpVerificationRepository.class
 com\example\hospitalmvp\service\SlotService.class
 com\example\hospitalmvp\controller\PatientController.class
 com\example\hospitalmvp\dto\AppointmentDtos$BookRequest.class
@@ -24,6 +25,8 @@ com\example\hospitalmvp\security\CustomUserDetailsService.class
 com\example\hospitalmvp\controller\DoctorController.class
 com\example\hospitalmvp\dto\AppointmentDtos$UpdateRemarks.class
 com\example\hospitalmvp\entity\user\User.class
+com\example\hospitalmvp\service\OtpService.class
+com\example\hospitalmvp\entity\OtpVerification.class
 com\example\hospitalmvp\exception\GlobalExceptionHandler.class
 com\example\hospitalmvp\controller\AdminController.class
 com\example\hospitalmvp\entity\user\Patient.class
@@ -41,3 +44,4 @@ com\example\hospitalmvp\repository\PatientRepository.class
 com\example\hospitalmvp\controller\PageController.class
 com\example\hospitalmvp\controller\TestController.class
 com\example\hospitalmvp\entity\user\Admin.class
+com\example\hospitalmvp\service\EmailService.class

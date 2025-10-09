@@ -25,13 +25,14 @@ public class DataLoader {
 
     @Bean
     CommandLineRunner loadData(PasswordEncoder encoder, PatientRepository patientRepo, DoctorRepository doctorRepo,
-            AdminRepository adminRepo, SlotRepository slotRepo) {
+            AdminRepository adminRepo, SlotRepository slotRepo, com.example.hospitalmvp.repository.AppointmentRepository appointmentRepo) {
         return args -> {
             System.out.println("🌱 Starting database seeding...");
             System.out.println("🔐 Password encoder test: " + encoder.encode("password123"));
 
-            // Clear existing data (if any)
-            slotRepo.deleteAll();
+            // Clear existing data (if any) - DELETE IN CORRECT ORDER TO AVOID FK CONSTRAINTS
+            appointmentRepo.deleteAll();  // Delete appointments first (child)
+            slotRepo.deleteAll();          // Then slots (referenced by appointments)
             patientRepo.deleteAll();
             doctorRepo.deleteAll();
             adminRepo.deleteAll();

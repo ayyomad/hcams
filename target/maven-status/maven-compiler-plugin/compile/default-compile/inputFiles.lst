@@ -12,6 +12,7 @@ D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\dto\AuthD
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\dto\SlotDtos.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\entity\Appointment.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\entity\AppointmentStatus.java
+D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\entity\OtpVerification.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\entity\Role.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\entity\Slot.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\entity\user\Admin.java
@@ -23,6 +24,7 @@ D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\HospitalM
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\repository\AdminRepository.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\repository\AppointmentRepository.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\repository\DoctorRepository.java
+D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\repository\OtpVerificationRepository.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\repository\PatientRepository.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\repository\SlotRepository.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\repository\UserRepository.java
@@ -32,4 +34,6 @@ D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\security\
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\security\SecurityConfig.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\service\AppointmentService.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\service\AuthService.java
+D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\service\EmailService.java
+D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\service\OtpService.java
 D:\Common\Downloads\java-project\src\main\java\com\example\hospitalmvp\service\SlotService.java
