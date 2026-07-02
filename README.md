@@ -129,71 +129,8 @@ hcams/
 
 ---
 
-## 🚀 Deployment
 
-### Using JAR
 
-```bash
-# Build
-mvn clean package -DskipTests
-
-# Run
-java -jar target/hospital-mvp-0.0.1-SNAPSHOT.jar
-```
-
-### Using Docker (Optional)
-
-```bash
-# Build image
-docker build -t hcams:latest .
-
-# Run container
-docker run -p 8080:8080 hcams:latest
-```
-
----
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-mvn test
-
-# Run specific test
-mvn test -Dtest=AppointmentServiceTest
-```
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-## 👥 Team
-
-Developed by the HCAMS Team
-
----
-
-## 📞 Support
-
-For issues and questions:
-- 📧 Email: support@hcams.com
-- 🐛 Issues: [GitHub Issues](https://github.com/ayyomad/hcams/issues)
-
----
 
 **Last Updated**: October 5, 2025  
 **Version**: 1.0.0  
